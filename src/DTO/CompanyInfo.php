@@ -12,7 +12,7 @@ class CompanyInfo
     public function __construct(
         private readonly string $businessId,
         private readonly string $name,
-        private readonly string $website,
+        private readonly ?string $website,
         private readonly Address $currentAddress,
         private readonly array $businessLines
     ) {
@@ -28,7 +28,7 @@ class CompanyInfo
         return $this->name;
     }
 
-    public function getWebsite(): string
+    public function getWebsite(): ?string
     {
         return $this->website;
     }
