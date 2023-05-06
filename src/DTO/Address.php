@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
-use DateTimeImmutable;
-
 class Address
 {
     public function __construct(
         private readonly string $street,
         private readonly string $city,
-        private readonly string $postalCode,
-        private readonly DateTimeImmutable $registrationDate
+        private readonly string $postalCode
     ) {
     }
 
@@ -29,10 +26,5 @@ class Address
     public function getPostalCode(): string
     {
         return $this->postalCode;
-    }
-
-    public function getRegistrationDate(): DateTimeImmutable
-    {
-        return $this->registrationDate;
     }
 }
