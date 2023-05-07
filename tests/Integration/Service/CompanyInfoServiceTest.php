@@ -43,35 +43,56 @@ class CompanyInfoServiceTest extends KernelTestCase
     #[TestDox('Test that `getCompanyInformation()` method throws exception when Client throws exception')]
     public function testGetCompanyInformationMethodThrowsExceptionWhenClientThrowsException(): void
     {
-        $businessId = '1234567-8';
-
         $this->client
             ->expects(self::once())
             ->method('get')
-            ->with('https://avoindata.prh.fi/bis/v1/' . $businessId)
+            ->with('https://avoindata.prh.fi/bis/v1/1234567-8')
             ->willThrowException(
                 $this->getMockBuilder(ClientException::class)->disableOriginalConstructor()->getMock()
             );
 
         self::expectException(CompanyNotFoundException::class);
 
-        $this->callGetCompanyInformation($businessId);
+        $this->callGetCompanyInformation();
     }
 
-    #[TestDox('Test that `getCompanyInformation()` method throws exception when Client response does not have results')]
-    public function testGetCompanyInformationMethodThrowsExceptionWhenClientResponseDoesNotHaveResults(): void
-    {
-        $businessId = '1234567-8';
-
-        $this->client
-            ->expects(self::once())
-            ->method('get')
-            ->with('https://avoindata.prh.fi/bis/v1/' . $businessId)
-            ->willReturn(new Response(body: json_encode(['foo' => 'bar'])));
+    #[DataProvider('dataProviderUnexpectedClientData')]
+    #[TestDox('Test that `getCompanyInformation()` method throws exception when Client returns unexpected data')]
+    public function testGetCompanyInformationMethodThrowsExceptionWhenClientReturnsUnexpectedData(
+        array $unexpectedClientData
+    ): void {
+        $this->setUpClientGetCall($unexpectedClientData);
 
         self::expectException(UnexpectedClientDataException::class);
 
-        $this->callGetCompanyInformation($businessId);
+        $this->callGetCompanyInformation();
+    }
+
+    #[DataProvider('dataProviderValidClientData')]
+    #[TestDox('Test that `getCompanyInformation()` method returns expected CompanyInfo data when Client data is valid')]
+    public function testGetCompanyInformationMethodReturnsExpectedCompanyInfoDataWhenClientDataIsValid(
+        array $validClientData,
+        string $companyName,
+        ?string $companyWebsite,
+        int $amountOfBusinessLines,
+        string $street,
+        string $city,
+        string $postalCode
+    ): void {
+        $this->setUpClientGetCall($validClientData);
+
+        $companyInfo = $this->callGetCompanyInformation();
+
+        self::assertSame('1234567-8', $companyInfo->getBusinessId());
+        self::assertSame($companyName, $companyInfo->getName());
+        self::assertSame($companyWebsite, $companyInfo->getWebsite());
+        self::assertCount($amountOfBusinessLines, $companyInfo->getBusinessLines());
+
+        $address = $companyInfo->getCurrentAddress();
+
+        self::assertSame($street, $address->getStreet());
+        self::assertSame($city, $address->getCity());
+        self::assertSame($postalCode, $address->getPostalCode());
     }
 
     public static function dataProviderInvalidBusinessId(): Generator
@@ -82,16 +103,143 @@ class CompanyInfoServiceTest extends KernelTestCase
         yield ['         '];    // Empty spaces
     }
 
-    private function setUpClientGetCall(string $businessId = '1234567-8'): void
+    public static function dataProviderUnexpectedClientData(): Generator
+    {
+        yield [['foo' => 'bar']];
+
+        $invalidCompanyName = self::getValidClientResponseData();
+        $invalidCompanyName['results'][0]['name'] = ['expecting' => 'string'];
+        yield [$invalidCompanyName];
+
+        $noAddresses = self::getValidClientResponseData();
+        $noAddresses['results'][0]['addresses'] = [];
+        yield [$noAddresses];
+
+        $invalidAddressData = self::getValidClientResponseData();
+        $invalidAddressData['results'][0]['addresses'] = 'expecting array';
+        yield [$invalidAddressData];
+
+        $invalidContactDetailsData = self::getValidClientResponseData();
+        $invalidContactDetailsData['results'][0]['contactDetails'] = 'expecting array';
+        yield [$invalidContactDetailsData];
+
+        $invalidBusinessLinesData = self::getValidClientResponseData();
+        $invalidBusinessLinesData['results'][0]['businessLines'] = 'expecting array';
+        yield [$invalidBusinessLinesData];
+    }
+
+    public static function dataProviderValidClientData(): Generator
+    {
+        $validClientData = self::getValidClientResponseData();
+
+        yield [
+            $validClientData,
+            'Example Company',
+            'www.example.com',
+            2,
+            'Example Street 123',
+            'Example City',
+            '12345',
+        ];
+
+        $validClientData['results'][0]['contactDetails'] = ['insufficient' => 'data'];
+        $validClientData['results'][0]['businessLines'] = ['insufficient' => 'data'];
+
+        // Case where no valid website and business lines are found
+        yield [
+            $validClientData,
+            'Example Company',
+            null,
+            0,
+            'Example Street 123',
+            'Example City',
+            '12345',
+        ];
+    }
+
+    private function setUpClientGetCall(array $clientData, string $businessId = '1234567-8'): void
     {
         $this->client
             ->expects(self::once())
             ->method('get')
-            ->with('https://avoindata.prh.fi/bis/v1/' . $businessId);
+            ->with('https://avoindata.prh.fi/bis/v1/' . $businessId)
+            ->willReturn(new Response(body: json_encode($clientData)));
     }
 
     private function callGetCompanyInformation(string $businessId = '1234567-8'): CompanyInfo
     {
         return $this->service->getCompanyInformation($businessId);
+    }
+
+    private static function getValidClientResponseData(): array
+    {
+        return [
+            'results' =>
+                [[
+                    "name" => 'Example Company',
+                    "addresses" =>
+                        [
+                            [
+                                "registrationDate" => "2023-04-04T18:48:31.941Z",
+                                "endDate" => "2023-05-04T18:48:31.941Z",
+                                "careOf" => "string",
+                                "street" => "Not most recent street 2",
+                                "postCode" => "string",
+                                "city" => "string",
+                                "language" => "string",
+                            ],
+                            [
+                                "registrationDate" => "2023-05-04T18:48:31.941Z",
+                                "endDate" => "2023-05-04T18:48:31.941Z",
+                                "careOf" => "string",
+                                "street" => "Example Street 123",
+                                "postCode" => "12345",
+                                "city" => "Example City",
+                                "language" => "string",
+                            ],
+                        ],
+                    "contactDetails" =>
+                        [
+                            [
+                                "registrationDate" => "2023-04-04T18:48:31.941Z",
+                                "endDate" => "2023-05-04T18:48:31.941Z",
+                                "language" => "string",
+                                "value" => "example.com",
+                                "type" => "string"
+                            ],
+                            [
+                                "registrationDate" => "2023-05-04T18:48:31.941Z",
+                                "endDate" => "2023-05-04T18:48:31.941Z",
+                                "language" => "string",
+                                "value" => "www.example.com",
+                                "type" => "string"
+                            ],
+                            [
+                                "registrationDate" => "2023-05-04T18:48:31.941Z",
+                                "endDate" => "2023-05-04T18:48:31.941Z",
+                                "language" => "string",
+                                "value" => "string",
+                                "type" => "string"
+                            ]
+                        ],
+                    "businessLines" =>
+                        [
+                            [
+                                "registrationDate" => "2023-05-04T18:48:31.941Z",
+                                "endDate" => "2023-05-04T18:48:31.941Z",
+                                "code" => "string",
+                                "name" => "string",
+                                "language" => "string"
+                            ],
+                            [
+                                "registrationDate" => "2023-05-04T18:48:31.941Z",
+                                "endDate" => "2023-05-04T18:48:31.941Z",
+                                "code" => "string",
+                                "name" => "string",
+                                "language" => "string"
+                            ]
+                        ]
+                    ]]
+                ];
     }
 }
