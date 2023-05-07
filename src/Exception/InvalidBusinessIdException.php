@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Exception;
+namespace RikuKukkaniemi\FinnishCompanyInfo\Exception;
 
 class InvalidBusinessIdException extends CompanyInfoException
 {

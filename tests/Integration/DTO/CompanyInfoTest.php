@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\DTO;
 
-use App\DTO\Address;
-use App\DTO\BusinessLine;
-use App\DTO\CompanyInfo;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestDox;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\Address;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\BusinessLine;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\CompanyInfo;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class CompanyInfoTest extends KernelTestCase

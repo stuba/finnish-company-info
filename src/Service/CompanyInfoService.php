@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace RikuKukkaniemi\FinnishCompanyInfo\Service;
 
-use App\DTO\Address;
-use App\DTO\BusinessLine;
-use App\DTO\CompanyInfo;
-use App\Exception\CompanyInfoException;
-use App\Exception\CompanyNotFoundException;
-use App\Exception\InvalidBusinessIdException;
-use App\Exception\UnexpectedClientDataException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\Address;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\BusinessLine;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\CompanyInfo;
+use RikuKukkaniemi\FinnishCompanyInfo\Exception\CompanyInfoException;
+use RikuKukkaniemi\FinnishCompanyInfo\Exception\CompanyNotFoundException;
+use RikuKukkaniemi\FinnishCompanyInfo\Exception\InvalidBusinessIdException;
+use RikuKukkaniemi\FinnishCompanyInfo\Exception\UnexpectedClientDataException;
 use Throwable;
 
 class CompanyInfoService

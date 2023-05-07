@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service;
 
-use App\DTO\CompanyInfo;
-use App\Exception\CompanyNotFoundException;
-use App\Exception\InvalidBusinessIdException;
-use App\Exception\UnexpectedClientDataException;
-use App\Service\CompanyInfoService;
 use Generator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestDox;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\CompanyInfo;
+use RikuKukkaniemi\FinnishCompanyInfo\Exception\CompanyNotFoundException;
+use RikuKukkaniemi\FinnishCompanyInfo\Exception\InvalidBusinessIdException;
+use RikuKukkaniemi\FinnishCompanyInfo\Exception\UnexpectedClientDataException;
+use RikuKukkaniemi\FinnishCompanyInfo\Service\CompanyInfoService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class CompanyInfoServiceTest extends KernelTestCase

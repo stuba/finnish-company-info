@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\DTO;
 
-use App\DTO\BusinessLine;
 use PHPUnit\Framework\Attributes\TestDox;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\BusinessLine;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class BusinessLineTest extends KernelTestCase

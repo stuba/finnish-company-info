@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\DTO;
 
-use App\DTO\Address;
 use PHPUnit\Framework\Attributes\TestDox;
+use RikuKukkaniemi\FinnishCompanyInfo\DTO\Address;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class AddressTest extends KernelTestCase

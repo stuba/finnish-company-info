@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Example;
 
-use App\Exception\CompanyInfoException;
-use App\Service\CompanyInfoService;
+use RikuKukkaniemi\FinnishCompanyInfo\Exception\CompanyInfoException;
+use RikuKukkaniemi\FinnishCompanyInfo\Service\CompanyInfoService;
 
 class Example
 {
