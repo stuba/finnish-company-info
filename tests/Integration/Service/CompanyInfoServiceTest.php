@@ -68,31 +68,34 @@ class CompanyInfoServiceTest extends KernelTestCase
         $this->callGetCompanyInformation();
     }
 
-    #[DataProvider('dataProviderValidClientData')]
     #[TestDox('Test that `getCompanyInformation()` method returns expected CompanyInfo data when Client data is valid')]
-    public function testGetCompanyInformationMethodReturnsExpectedCompanyInfoDataWhenClientDataIsValid(
-        array $validClientData,
-        string $companyName,
-        ?string $companyWebsite,
-        int $amountOfBusinessLines,
-        string $street,
-        string $city,
-        string $postalCode
-    ): void {
-        $this->setUpClientGetCall($validClientData);
+    public function testGetCompanyInformationMethodReturnsExpectedCompanyInfoDataWhenClientDataIsValid(): void
+    {
+        $this->setUpClientGetCall(self::getValidClientResponseData());
 
         $companyInfo = $this->callGetCompanyInformation();
 
         self::assertSame('1234567-8', $companyInfo->getBusinessId());
-        self::assertSame($companyName, $companyInfo->getName());
-        self::assertSame($companyWebsite, $companyInfo->getWebsite());
-        self::assertCount($amountOfBusinessLines, $companyInfo->getBusinessLines());
+        self::assertSame('Example Company', $companyInfo->getName());
+        self::assertSame('www.example.com', $companyInfo->getWebsite());
+        self::assertCount(2, $companyInfo->getBusinessLines());
 
         $address = $companyInfo->getCurrentAddress();
 
-        self::assertSame($street, $address->getStreet());
-        self::assertSame($city, $address->getCity());
-        self::assertSame($postalCode, $address->getPostalCode());
+        self::assertSame('Example Street 123', $address->getStreet());
+        self::assertSame('Example City', $address->getCity());
+        self::assertSame('12345', $address->getPostalCode());
+    }
+
+    #[DataProvider('dataProviderValidWebsite')]
+    #[TestDox('Test that `getCompanyInformation()` method returns expected CompanyInfo website ($website) when Client data is valid')]
+    public function testGetCompanyInformationMethodReturnsExpectedCompanyInfoWebsiteWhenClientDataIsValid(
+        array $validClientData,
+        ?string $website
+    ): void {
+        $this->setUpClientGetCall($validClientData);
+
+        self::assertSame($website, $this->callGetCompanyInformation()->getWebsite());
     }
 
     public static function dataProviderInvalidBusinessId(): Generator
@@ -128,33 +131,24 @@ class CompanyInfoServiceTest extends KernelTestCase
         yield [$invalidBusinessLinesData];
     }
 
-    public static function dataProviderValidClientData(): Generator
+    public static function dataProviderValidWebsite(): Generator
     {
         $validClientData = self::getValidClientResponseData();
 
-        yield [
-            $validClientData,
-            'Example Company',
-            'www.example.com',
-            2,
-            'Example Street 123',
-            'Example City',
-            '12345',
-        ];
-
         $validClientData['results'][0]['contactDetails'] = ['insufficient' => 'data'];
-        $validClientData['results'][0]['businessLines'] = ['insufficient' => 'data'];
+        yield [$validClientData, null];
 
-        // Case where no valid website and business lines are found
-        yield [
-            $validClientData,
-            'Example Company',
-            null,
-            0,
-            'Example Street 123',
-            'Example City',
-            '12345',
-        ];
+        $validClientData['results'][0]['contactDetails'] = self::getValidContactDetailsElement('http://example.com');
+        yield [$validClientData, 'http://example.com'];
+
+        $validClientData['results'][0]['contactDetails'] = self::getValidContactDetailsElement('https://example.com');
+        yield [$validClientData, 'https://example.com'];
+
+        $validClientData['results'][0]['contactDetails'] = self::getValidContactDetailsElement('www.example.com');
+        yield [$validClientData, 'www.example.com'];
+
+        $validClientData['results'][0]['contactDetails'] = self::getValidContactDetailsElement('example.com');
+        yield [$validClientData, 'example.com'];
     }
 
     private function setUpClientGetCall(array $clientData, string $businessId = '1234567-8'): void
@@ -241,5 +235,16 @@ class CompanyInfoServiceTest extends KernelTestCase
                         ]
                     ]]
                 ];
+    }
+
+    private static function getValidContactDetailsElement(string $websiteValue): array
+    {
+        return [[
+            "registrationDate" => "2023-04-04T18:48:31.941Z",
+            "endDate" => "2023-05-04T18:48:31.941Z",
+            "language" => "string",
+            "value" => $websiteValue,
+            "type" => "string"
+        ]];
     }
 }
