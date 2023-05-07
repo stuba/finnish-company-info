@@ -10,8 +10,9 @@ use App\DTO\CompanyInfo;
 use App\Exception\CompanyInfoException;
 use App\Exception\CompanyNotFoundException;
 use App\Exception\InvalidBusinessIdException;
-use App\Exception\InvalidCompanyDataException;
+use App\Exception\UnexpectedClientDataException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Throwable;
 
 class CompanyInfoService
@@ -38,7 +39,7 @@ class CompanyInfoService
                 $this->getBusinessLines($result['businessLines'])
             );
         } catch (Throwable) {
-            throw new InvalidCompanyDataException("Company with business ID '$businessId' had insufficient data");
+            throw new UnexpectedClientDataException("Got unexpected Client data for business ID '$businessId'.");
         }
     }
 
@@ -53,18 +54,22 @@ class CompanyInfoService
     }
 
     /**
-     * @throws CompanyNotFoundException
+     * @throws CompanyNotFoundException|UnexpectedClientDataException
      */
     private function getResponseData(string $businessId): array
     {
         try {
             $response = $this->client->get('https://avoindata.prh.fi/bis/v1/' . $businessId);
+        } catch (GuzzleException) {
+            throw new CompanyNotFoundException("Company not found for business ID '$businessId'.");
+        }
 
+        try {
             $decoded = json_decode($response->getBody()->getContents(), true);
 
             return $decoded['results'][0];
         } catch (Throwable) {
-            throw new CompanyNotFoundException("Company not found for business ID '$businessId'.");
+            throw new UnexpectedClientDataException("Got unexpected Client data for business ID '$businessId'.");
         }
     }
 
