@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\DTO;
+namespace RikuKukkaniemi\FinnishCompanyInfo\Tests\Integration\DTO;
 
 use PHPUnit\Framework\Attributes\TestDox;
 use RikuKukkaniemi\FinnishCompanyInfo\DTO\BusinessLine;

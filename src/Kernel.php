@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace RikuKukkaniemi\FinnishCompanyInfo;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;

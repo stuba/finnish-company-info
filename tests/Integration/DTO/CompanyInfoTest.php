@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\DTO;
+namespace RikuKukkaniemi\FinnishCompanyInfo\Tests\Integration\DTO;
 
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
