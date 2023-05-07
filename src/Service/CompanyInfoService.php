@@ -130,7 +130,7 @@ class CompanyInfoService
      */
     private function sortByRegistrationDate(array $elements): array
     {
-        usort($elements, function ($a, $b) {
+        usort($elements, function (array $a, array $b) {
             return strtotime($b['registrationDate']) - strtotime($a['registrationDate']);
         });
 
