@@ -28,15 +28,15 @@ class CompanyInfoService
     {
         $this->validateBusinessId($businessId);
 
-        $result = $this->getResponseData($businessId);
+        $clientData = $this->getClientData($businessId);
 
         try {
             return new CompanyInfo(
                 $businessId,
-                $result['name'],
-                $this->getWebsite($result['contactDetails']),
-                $this->getCurrentAddress($result['addresses']),
-                $this->getBusinessLines($result['businessLines'])
+                $clientData['name'],
+                $this->getWebsite($clientData['contactDetails']),
+                $this->getCurrentAddress($clientData['addresses']),
+                $this->getBusinessLines($clientData['businessLines'])
             );
         } catch (Throwable) {
             throw new UnexpectedClientDataException("Got unexpected Client data for business ID '$businessId'.");
@@ -56,7 +56,7 @@ class CompanyInfoService
     /**
      * @throws CompanyNotFoundException|UnexpectedClientDataException
      */
-    private function getResponseData(string $businessId): array
+    private function getClientData(string $businessId): array
     {
         try {
             $response = $this->client->get('https://avoindata.prh.fi/bis/v1/' . $businessId);
