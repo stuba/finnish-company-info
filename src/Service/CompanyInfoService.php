@@ -14,6 +14,7 @@ use RikuKukkaniemi\FinnishCompanyInfo\Exception\CompanyNotFoundException;
 use RikuKukkaniemi\FinnishCompanyInfo\Exception\InvalidBusinessIdException;
 use RikuKukkaniemi\FinnishCompanyInfo\Exception\UnexpectedClientDataException;
 use Throwable;
+use TypeError;
 
 class CompanyInfoService
 {
@@ -22,6 +23,10 @@ class CompanyInfoService
     }
 
     /**
+     * Get Finnish company information using business ID (y-tunnus).
+     * For more information and examples see project README.
+     *
+     * @see https://github.com/RikuKukkaniemi/finnish-company-info#finnish-company-info
      * @throws CompanyInfoException
      */
     public function getCompanyInformation(string $businessId): CompanyInfo
@@ -44,6 +49,9 @@ class CompanyInfoService
     }
 
     /**
+     * A light validation on business ID. Only validates that string contains
+     * numbers with hyphen before the check number.
+     *
      * @throws InvalidBusinessIdException
      */
     private function validateBusinessId(string $businessId): void
@@ -54,6 +62,8 @@ class CompanyInfoService
     }
 
     /**
+     * Returns the data from https://avoindata.prh.fi/ytj_en.html.
+     *
      * @throws CompanyNotFoundException|UnexpectedClientDataException
      */
     private function getClientData(string $businessId): array
@@ -73,6 +83,12 @@ class CompanyInfoService
         }
     }
 
+    /**
+     * Returns the current address. Expects to have at least one address as
+     * companies should have, otherwise throws TypeError.
+     *
+     * @throws TypeError
+     */
     private function getCurrentAddress(array $addresses): Address
     {
         $currentAddress = $this->sortByRegistrationDate($addresses)[0];
@@ -84,6 +100,10 @@ class CompanyInfoService
         );
     }
 
+    /**
+     * Tries to parse most recent website from contact details.
+     * If valid website is not found, null is returned.
+     */
     private function getWebsite(array $contactDetails): ?string
     {
         $website = null;
@@ -104,6 +124,9 @@ class CompanyInfoService
     }
 
     /**
+     * Parses business lines from array. Accepts business line only if it has
+     * code, name (description) and language data values.
+     *
      * @return array<int, BusinessLine>
      */
     private function getBusinessLines(array $businessLineData): array
@@ -126,7 +149,10 @@ class CompanyInfoService
     }
 
     /**
-     * The latest registered element is first element of array
+     * Sorts the elements in a way that the latest registered
+     * element is first element of array.
+     *
+     * @throws TypeError If $elements is not multidimensional array
      */
     private function sortByRegistrationDate(array $elements): array
     {
@@ -137,6 +163,13 @@ class CompanyInfoService
         return $elements;
     }
 
+    /**
+     * Checks if value is valid website. Following websites should be validated as valid:
+     * http://example.com
+     * https://example.com
+     * www.example.com
+     * example.com
+     */
     private function isValidWebsite(string $value): bool
     {
         return (bool) preg_match(
