@@ -1,8 +1,16 @@
 {
-    "type": "project",
-    "license": "proprietary",
+    "name": "rikukukkaniemi/finnish-company-info",
+    "description": "Get Finnish company information using business ID (y-tunnus)",
+    "type": "library",
+    "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Riku Kukkaniemi",
+            "email": "kukkaniemi.riku@gmail.com"
+        }
+    ],
     "require": {
         "php": ">=8.2",
         "ext-ctype": "*",
