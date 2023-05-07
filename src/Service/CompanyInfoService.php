@@ -65,7 +65,7 @@ class CompanyInfoService
         }
 
         try {
-            $decoded = json_decode($response->getBody()->getContents(), true);
+            $decoded = json_decode($response->getBody()->__toString(), true);
 
             return $decoded['results'][0];
         } catch (Throwable) {
