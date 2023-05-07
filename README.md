@@ -10,6 +10,16 @@ given its business ID (y-tunnus):
 
 Library uses https://avoindata.prh.fi/ytj_en.html as the data source.
 
+## Installation
+
+You can require library with:
+
+```
+composer require rikukukkaniemi/finnish-company-info
+```
+
+See requirements from [Packagist](https://packagist.org/packages/rikukukkaniemi/finnish-company-info).
+
 ## How to use
 
 Here is an example on how to use the library:
