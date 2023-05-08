@@ -26,7 +26,7 @@ class Example
         $currentAddress->getCity();                             // String
         $currentAddress->getPostalCode();                       // String
 
-        $businessLines = $companyInfo->getBusinessLines();      // Array of BusinessLine objects
+        $businessLines = $companyInfo->getBusinessLines();      // Array of BusinessLine objects (can be empty)
         $businessLines[0]->getCode();                           // String
         $businessLines[0]->getDescription();                    // String
         $businessLines[0]->getLanguage();                       // String (language of description)
