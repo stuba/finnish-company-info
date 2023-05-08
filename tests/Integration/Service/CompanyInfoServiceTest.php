@@ -145,16 +145,16 @@ class CompanyInfoServiceTest extends KernelTestCase
         $validClientData['results'][0]['contactDetails'] = ['insufficient' => 'data'];
         yield [$validClientData, null];
 
-        $validClientData['results'][0]['contactDetails'] = self::getValidContactDetailsElement('http://example.com');
+        $validClientData['results'][0]['contactDetails'] = [self::getValidContactDetailsElement('http://example.com')];
         yield [$validClientData, 'http://example.com'];
 
-        $validClientData['results'][0]['contactDetails'] = self::getValidContactDetailsElement('https://example.com');
+        $validClientData['results'][0]['contactDetails'] = [self::getValidContactDetailsElement('https://example.com')];
         yield [$validClientData, 'https://example.com'];
 
-        $validClientData['results'][0]['contactDetails'] = self::getValidContactDetailsElement('www.example.com');
+        $validClientData['results'][0]['contactDetails'] = [self::getValidContactDetailsElement('www.example.com')];
         yield [$validClientData, 'www.example.com'];
 
-        $validClientData['results'][0]['contactDetails'] = self::getValidContactDetailsElement('example.com');
+        $validClientData['results'][0]['contactDetails'] = [self::getValidContactDetailsElement('example.com')];
         yield [$validClientData, 'example.com'];
     }
 
@@ -201,27 +201,9 @@ class CompanyInfoServiceTest extends KernelTestCase
                         ],
                     "contactDetails" =>
                         [
-                            [
-                                "registrationDate" => "2023-04-04T18:48:31.941Z",
-                                "endDate" => "2023-05-04T18:48:31.941Z",
-                                "language" => "string",
-                                "value" => "example.com",
-                                "type" => "string"
-                            ],
-                            [
-                                "registrationDate" => "2023-05-04T18:48:31.941Z",
-                                "endDate" => "2023-05-04T18:48:31.941Z",
-                                "language" => "string",
-                                "value" => "www.example.com",
-                                "type" => "string"
-                            ],
-                            [
-                                "registrationDate" => "2023-05-04T18:48:31.941Z",
-                                "endDate" => "2023-05-04T18:48:31.941Z",
-                                "language" => "string",
-                                "value" => "string",
-                                "type" => "string"
-                            ]
+                            self::getValidContactDetailsElement('example.com', '2023-04-04T18:48:31.941Z'),
+                            self::getValidContactDetailsElement('www.example.com'),
+                            self::getValidContactDetailsElement('not website'),
                         ],
                     "businessLines" =>
                         [
@@ -244,14 +226,16 @@ class CompanyInfoServiceTest extends KernelTestCase
                 ];
     }
 
-    private static function getValidContactDetailsElement(string $websiteValue): array
-    {
-        return [[
-            "registrationDate" => "2023-04-04T18:48:31.941Z",
+    private static function getValidContactDetailsElement(
+        string $websiteValue,
+        string $registrationDate = '2023-05-04T18:48:31.941Z'
+    ): array {
+        return [
+            "registrationDate" => $registrationDate,
             "endDate" => "2023-05-04T18:48:31.941Z",
             "language" => "string",
             "value" => $websiteValue,
             "type" => "string"
-        ]];
+        ];
     }
 }
