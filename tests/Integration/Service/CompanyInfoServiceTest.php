@@ -74,14 +74,21 @@ class CompanyInfoServiceTest extends KernelTestCase
         $this->setUpClientGetCall(self::getValidClientResponseData());
 
         $companyInfo = $this->callGetCompanyInformation();
-
         self::assertSame('1234567-8', $companyInfo->getBusinessId());
         self::assertSame('Example Company', $companyInfo->getName());
         self::assertSame('www.example.com', $companyInfo->getWebsite());
-        self::assertCount(2, $companyInfo->getBusinessLines());
+
+        $businessLines = $companyInfo->getBusinessLines();
+        self::assertCount(2, $businessLines);
+        self::assertSame('012345', $businessLines[0]->getCode());
+        self::assertSame('012345', $businessLines[1]->getCode());
+        self::assertSame('Description', $businessLines[0]->getDescription());
+        self::assertSame('Another Description', $businessLines[1]->getDescription());
+        self::assertSame('FI', $businessLines[0]->getLanguage());
+        self::assertSame('EN', $businessLines[1]->getLanguage());
+
 
         $address = $companyInfo->getCurrentAddress();
-
         self::assertSame('Example Street 123', $address->getStreet());
         self::assertSame('Example City', $address->getCity());
         self::assertSame('12345', $address->getPostalCode());
@@ -221,16 +228,16 @@ class CompanyInfoServiceTest extends KernelTestCase
                             [
                                 "registrationDate" => "2023-05-04T18:48:31.941Z",
                                 "endDate" => "2023-05-04T18:48:31.941Z",
-                                "code" => "string",
-                                "name" => "string",
-                                "language" => "string"
+                                "code" => "012345",
+                                "name" => "Description",
+                                "language" => "FI"
                             ],
                             [
                                 "registrationDate" => "2023-05-04T18:48:31.941Z",
                                 "endDate" => "2023-05-04T18:48:31.941Z",
-                                "code" => "string",
-                                "name" => "string",
-                                "language" => "string"
+                                "code" => "012345",
+                                "name" => "Another Description",
+                                "language" => "EN"
                             ]
                         ]
                     ]]
